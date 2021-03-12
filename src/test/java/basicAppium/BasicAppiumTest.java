@@ -16,6 +16,9 @@ import java.util.concurrent.TimeUnit;
 
 public class BasicAppiumTest {
     private AppiumDriver driver;
+    String Titulo="Prueba";
+    String Titulo2="Prueba2";
+
 
 
 
@@ -34,28 +37,56 @@ public class BasicAppiumTest {
         
     }
 
-    @Test
-    public void verifyToDo(){
-        //Click plus
-        driver.findElement(By.id("com.vrproductiveapps.whendo:id/fab")).click();
-        //Llenar Form
-        //Titulo
-        driver.findElement(By.id("com.vrproductiveapps.whendo:id/noteTextTitle")).sendKeys("Test Prueba");
-        driver.findElement(By.id("com.vrproductiveapps.whendo:id/noteTextNotes")).sendKeys("Test Notes");
-        //Aceptar
-        driver.findElement(By.id("com.vrproductiveapps.whendo:id/saveItem")).click();
-
-        String create = "Test Prueba";
-        WebElement message = driver.findElement(By.id("com.vrproductiveapps.whendo:id/home_list_item_text"));
-        Assert.assertEquals("Es correcto",create,message.getText());
-
-
-
+    public void Crear_Nota(){
+        driver.findElement(By.xpath("//android.widget.ImageButton[@resource-id='com.vrproductiveapps.whendo:id/fab']")).click();
+        driver.findElement(By.xpath("//android.widget.EditText[@resource-id='com.vrproductiveapps.whendo:id/noteTextTitle']")).sendKeys(Titulo);
+        driver.findElement(By.xpath("//android.widget.EditText[@index='2']")).sendKeys("Prueba 1");
+        driver.findElement(By.xpath("//android.widget.TextView[@content-desc='Guardar']")).click();
     }
+    public void Editar_Nota(){
+        Crear_Nota();
+        driver.findElement(By.xpath("//android.widget.TextView[@text='"+Titulo+"']")).click();
+        driver.findElement(By.xpath("//android.widget.EditText[@resource-id='com.vrproductiveapps.whendo:id/noteTextTitle']")).sendKeys(Titulo2);
+        driver.findElement(By.xpath("//android.widget.EditText[@index='2']")).sendKeys("Prueba Editada");
+        driver.findElement(By.xpath("//android.widget.TextView[@content-desc='Guardar']")).click();
+    }
+
+    public void Eliminar_Nota(){
+        Editar_Nota();
+        driver.findElement(By.xpath("//android.widget.TextView[@text='"+Titulo2+"']")).click();
+        driver.findElement(By.xpath("//android.widget.TextView[@content-desc='Eliminar']")).click();
+        driver.findElement(By.xpath("//android.widget.Button[@text='ELIMINAR']")).click();
+    }
+
+
+    @Test
+    public void A(){
+        Crear_Nota();
+        int Notas=driver.findElements(By.xpath("//android.widget.TextView[@text='"+Titulo+"']")).size();
+        Assert.assertEquals("ERROR en contacto",1,Notas);
+    }
+    @Test
+    public void B() {
+        Editar_Nota();
+        String expectedResult="Prueba2";
+        String ResultadoReal=driver.findElement(By.xpath("//android.widget.TextView[@text='"+Titulo2+"']")).getText();
+        Assert.assertEquals("Error el resulta es incorrecto",expectedResult,ResultadoReal);
+    }
+
+    @Test
+    public void C() {
+        Eliminar_Nota();
+        int Notas=driver.findElements(By.xpath("//android.widget.TextView[@text='"+Titulo2+"']")).size();
+        Assert.assertEquals("ERROR en contacto",0,Notas);
+    }
+
 
     @After
-    public void afterTest(){
+    public void After(){
         driver.quit();
+
     }
+
+
 
 }
